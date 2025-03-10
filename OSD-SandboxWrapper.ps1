@@ -51,11 +51,8 @@ else {
 }
 
 Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
-Invoke-Expression -Command (Invoke-RestMethod -Uri functions.osdcloud.com)
 
-Import-Module OSD -Force
 
-Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
 #endregion
 
 #region Admin Elevation
@@ -78,9 +75,10 @@ Write-Host -ForegroundColor Green "[+] Transport Layer Security (TLS) 1.2"
 #region WinPE
 if ($WindowsPhase -eq 'WinPE') {
     #Process OSDCloud startup and load Azure KeyVault dependencies
-    osdcloud-StartWinPE -OSDCloud -KeyVault
-    Write-Host -ForegroundColor Cyan "To start a new PowerShell session, type 'start powershell' and press enter"
-    Write-Host -ForegroundColor Cyan "Start-OSDCloud, Start-OSDCloudGUI, or Start-OSDCloudAzure, can be run in the new PowerShell window"
+    Import-Module OSD -Force
+
+Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
+
     
     #Stop the startup Transcript.  OSDCloud will create its own
     $null = Stop-Transcript -ErrorAction Ignore
@@ -102,7 +100,6 @@ if ($WindowsPhase -eq 'AuditMode') {
 #region OOBE
 if ($WindowsPhase -eq 'OOBE') {
     #Load everything needed to run AutoPilot and Azure KeyVault
-    osdcloud-StartOOBE -Display -Language -DateTime -Autopilot -KeyVault -InstallWinGet -WinGetUpgrade -WinGetPwsh
     $null = Stop-Transcript -ErrorAction Ignore
 }
 #endregion
