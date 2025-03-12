@@ -332,16 +332,50 @@ catch {
 
 # TPM
 try {
-    $tpm = Get-Tpm
+    # $tpm = Get-Tpm
 
-    if ($null -eq $tpm) {
-        UpdateReturnCode -ReturnCode 1
-        $outObject.returnReason += $logFormatReturnReason -f $TPM_STRING
-        $outObject.logging += $logFormatWithBlob -f $TPM_STRING, "TPM is null", $FAIL_STRING
-        $exitCode = 1
-    }
-    elseif ($tpm.TpmPresent) {
-        $tpmVersion = Get-WmiObject -Class Win32_Tpm -Namespace root\CIMV2\Security\MicrosoftTpm | Select-Object -Property SpecVersion
+    # if ($null -eq $tpm) {
+    #     UpdateReturnCode -ReturnCode 1
+    #     $outObject.returnReason += $logFormatReturnReason -f $TPM_STRING
+    #     $outObject.logging += $logFormatWithBlob -f $TPM_STRING, "TPM is null", $FAIL_STRING
+    #     $exitCode = 1
+    # }
+    # elseif ($tpm.TpmPresent) {
+    #     $tpmVersion = Get-WmiObject -Class Win32_Tpm -Namespace root\CIMV2\Security\MicrosoftTpm | Select-Object -Property SpecVersion
+
+    #     if ($null -eq $tpmVersion.SpecVersion) {
+    #         UpdateReturnCode -ReturnCode 1
+    #         $outObject.returnReason += $logFormatReturnReason -f $TPM_STRING
+    #         $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, "null", $FAIL_STRING
+    #         $exitCode = 1
+    #     }
+
+    #     $majorVersion = $tpmVersion.SpecVersion.Split(",")[0] -as [int]
+    #     if ($majorVersion -lt 2) {
+    #         UpdateReturnCode -ReturnCode 1
+    #         $outObject.returnReason += $logFormatReturnReason -f $TPM_STRING
+    #         $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, ($tpmVersion.SpecVersion), $FAIL_STRING
+    #         $exitCode = 1
+    #     }
+    #     else {
+    #         $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, ($tpmVersion.SpecVersion), $PASS_STRING
+    #         UpdateReturnCode -ReturnCode 0
+    #     }
+    # }
+    # else {
+    #     if ($tpm.GetType().Name -eq "String") {
+    #         UpdateReturnCode -ReturnCode -1
+    #         $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, $UNDETERMINED_STRING, $UNDETERMINED_CAPS_STRING
+    #         $outObject.logging += $logFormatException -f $tpm
+    #     }
+    #     else {
+    #         UpdateReturnCode -ReturnCode  1
+    #         $outObject.returnReason += $logFormatReturnReason -f $TPM_STRING
+    #         $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, ($tpm.TpmPresent), $FAIL_STRING
+    #     }
+    #     $exitCode = 1
+    # }
+    $tpmVersion = Get-WmiObject -Class Win32_Tpm -Namespace root\CIMV2\Security\MicrosoftTpm | Select-Object -Property SpecVersion
 
         if ($null -eq $tpmVersion.SpecVersion) {
             UpdateReturnCode -ReturnCode 1
@@ -361,20 +395,6 @@ try {
             $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, ($tpmVersion.SpecVersion), $PASS_STRING
             UpdateReturnCode -ReturnCode 0
         }
-    }
-    else {
-        if ($tpm.GetType().Name -eq "String") {
-            UpdateReturnCode -ReturnCode -1
-            $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, $UNDETERMINED_STRING, $UNDETERMINED_CAPS_STRING
-            $outObject.logging += $logFormatException -f $tpm
-        }
-        else {
-            UpdateReturnCode -ReturnCode  1
-            $outObject.returnReason += $logFormatReturnReason -f $TPM_STRING
-            $outObject.logging += $logFormat -f $TPM_STRING, $TPM_VERSION_STRING, ($tpm.TpmPresent), $FAIL_STRING
-        }
-        $exitCode = 1
-    }
 }
 catch {
     UpdateReturnCode -ReturnCode -1
