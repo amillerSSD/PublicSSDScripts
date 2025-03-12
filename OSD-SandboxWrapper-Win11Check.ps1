@@ -541,6 +541,7 @@ else {
 }
 
 $win11check = Win11Check
+Write-Host -ForegroundColor Green "[=] win11 = '$win11check.returnResult'"
 if ($win11check.returnResult -eq "CAPABLE") {
     $WIN11COMPATIBLE = $true
     Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
