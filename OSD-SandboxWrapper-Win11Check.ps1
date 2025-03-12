@@ -578,6 +578,7 @@ if ($WindowsPhase -eq 'WinPE') {
 
 
 $win11check = Win11Check
+Write-Host -ForegroundColor Green "[x] win11 = $win11check"
 $win11checkValue = $win11check.WIN11COMPATIBLE
 Write-Host -ForegroundColor Green "[x] win11 = '$win11checkValue'"
 if ($win11checkValue -eq $true) {
