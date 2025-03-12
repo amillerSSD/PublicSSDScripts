@@ -508,12 +508,12 @@ $outObject | ConvertTo-Json -Compress
 
 if ($outObject.returnResult -eq $CAPABLE_CAPS_STRING) {
     $WIN11COMPATIBLE = $true
-    Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
+    #Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
     
     }
 else {
     $WIN11COMPATIBLE = $false
-    Write-Host -ForegroundColor Red "[+] Computer is only Windows 10 Compatible. Continuing with installation."
+    #Write-Host -ForegroundColor Red "[+] Computer is only Windows 10 Compatible. Continuing with installation."
     
     }
 
@@ -541,7 +541,16 @@ else {
 }
 
 $win11check = Win11Check
-Write-Host -ForegroundColor Green "[+] - win11Check = $win11check"
+if ($win11check.returnResult -eq "CAPABLE") {
+    $WIN11COMPATIBLE = $true
+    Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
+    }
+else {
+    $WIN11COMPATIBLE = $false
+    Write-Host -ForegroundColor Red "[+] Computer is only Windows 10 Compatible. Continuing with installation."
+    
+    }
+
 Write-Host -ForegroundColor Green "[+] - $ScriptName $ScriptVersion ($WindowsPhase Phase)"
 
 
@@ -570,12 +579,22 @@ if ($WindowsPhase -eq 'WinPE') {
     Import-Module OSD -Force
 
 
+$win11check = Win11Check
+if ($win11check.returnResult -eq "CAPABLE") {
+    $WIN11COMPATIBLE = $true
+    Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
+    Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
+    }
+else {
+    $WIN11COMPATIBLE = $false
+    Write-Host -ForegroundColor Red "[+] Computer is only Windows 10 Compatible. Continuing with installation."
+    Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSName 'Windows 10 22H2 x64' -OSEdition Education -ZTI
+    }
 
 
 
 
-Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
-#Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSName 'Windows 10 22H2 x64' -OSEdition Education -ZTI
+
 
     
 
