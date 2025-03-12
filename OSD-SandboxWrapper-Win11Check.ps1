@@ -541,6 +541,7 @@ else {
 }
 
 $win11check = Win11Check
+Write-Host -ForegroundColor Green "[+] $win11check"
 
 Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
 
