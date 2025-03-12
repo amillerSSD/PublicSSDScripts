@@ -271,34 +271,36 @@ using System.Runtime.InteropServices;
     }
 "@
 
-# Storage
-try {
-    $osDrive = Get-WmiObject -Class Win32_OperatingSystem | Select-Object -Property SystemDrive
-    $osDriveSize = Get-WmiObject -Class Win32_LogicalDisk -filter "DeviceID='$($osDrive.SystemDrive)'" | Select-Object @{Name = "SizeGB"; Expression = { $_.Size / 1GB -as [int] } }  
+# Ignore Storage in WinPE
+$outObject.logging += $logFormatWithUnit -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, ($osDriveSize.SizeGB), $GB_UNIT_STRING, $PASS_STRING
+UpdateReturnCode -ReturnCode 0
+# try {
+#     $osDrive = Get-WmiObject -Class Win32_OperatingSystem | Select-Object -Property SystemDrive
+#     $osDriveSize = Get-WmiObject -Class Win32_LogicalDisk -filter "DeviceID='$($osDrive.SystemDrive)'" | Select-Object @{Name = "SizeGB"; Expression = { $_.Size / 1GB -as [int] } }  
 
-    if ($null -eq $osDriveSize) {
-        UpdateReturnCode -ReturnCode 1
-        $outObject.returnReason += $logFormatReturnReason -f $STORAGE_STRING
-        $outObject.logging += $logFormatWithBlob -f $STORAGE_STRING, "Storage is null", $FAIL_STRING
-        $exitCode = 1
-    }
-    elseif ($osDriveSize.SizeGB -lt $MinOSDiskSizeGB) {
-        UpdateReturnCode -ReturnCode 1
-        $outObject.returnReason += $logFormatReturnReason -f $STORAGE_STRING
-        $outObject.logging += $logFormatWithUnit -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, ($osDriveSize.SizeGB), $GB_UNIT_STRING, $FAIL_STRING
-        $exitCode = 1
-    }
-    else {
-        $outObject.logging += $logFormatWithUnit -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, ($osDriveSize.SizeGB), $GB_UNIT_STRING, $PASS_STRING
-        UpdateReturnCode -ReturnCode 0
-    }
-}
-catch {
-    UpdateReturnCode -ReturnCode -1
-    $outObject.logging += $logFormat -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, $UNDETERMINED_STRING, $UNDETERMINED_CAPS_STRING
-    $outObject.logging += $logFormatException -f "$($_.Exception.GetType().Name) $($_.Exception.Message)"
-    $exitCode = 1
-}
+#     if ($null -eq $osDriveSize) {
+#         UpdateReturnCode -ReturnCode 1
+#         $outObject.returnReason += $logFormatReturnReason -f $STORAGE_STRING
+#         $outObject.logging += $logFormatWithBlob -f $STORAGE_STRING, "Storage is null", $FAIL_STRING
+#         $exitCode = 1
+#     }
+#     elseif ($osDriveSize.SizeGB -lt $MinOSDiskSizeGB) {
+#         UpdateReturnCode -ReturnCode 1
+#         $outObject.returnReason += $logFormatReturnReason -f $STORAGE_STRING
+#         $outObject.logging += $logFormatWithUnit -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, ($osDriveSize.SizeGB), $GB_UNIT_STRING, $FAIL_STRING
+#         $exitCode = 1
+#     }
+#     else {
+#         $outObject.logging += $logFormatWithUnit -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, ($osDriveSize.SizeGB), $GB_UNIT_STRING, $PASS_STRING
+#         UpdateReturnCode -ReturnCode 0
+#     }
+# }
+# catch {
+#     UpdateReturnCode -ReturnCode -1
+#     $outObject.logging += $logFormat -f $STORAGE_STRING, $OS_DISK_SIZE_STRING, $UNDETERMINED_STRING, $UNDETERMINED_CAPS_STRING
+#     $outObject.logging += $logFormatException -f "$($_.Exception.GetType().Name) $($_.Exception.Message)"
+#     $exitCode = 1
+# }
 
 # Memory (bytes)
 try {
@@ -581,13 +583,19 @@ $win11check = Win11Check
 Write-Host -ForegroundColor Green "[x] win11 = $win11check"
 $win11checkValue = $win11check.WIN11COMPATIBLE
 Write-Host -ForegroundColor Green "[x] win11 = '$win11checkValue'"
+
+
+$responsezz = read-host "Press enter to continue or any other key (and then enter) to abort"
+start powershell
+$responsezz2 = read-host "2 Press enter to continue or any other key (and then enter) to abort"
+
 if ($win11checkValue -eq $true) {
     Write-Host -ForegroundColor Green "[x] Computer is Windows 11 Compatible. Continuing with installation."
     Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
     }
 else {
     Write-Host -ForegroundColor Red "[x] Computer is only Windows 10 Compatible. Continuing with installation."
-    Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSName 'Windows 10 22H2 x64' -OSEdition Education -ZTI
+    Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSVersion 'Windows 10' -OSEdition Education -ZTI
     }
 
 
