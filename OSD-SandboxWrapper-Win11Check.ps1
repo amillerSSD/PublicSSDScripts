@@ -575,20 +575,19 @@ if ($WindowsPhase -eq 'WinPE') {
     Import-Module OSD -Force
 
 
+
+
 $win11check = Win11Check
-if ($win11check.returnResult -eq "CAPABLE") {
-    $WIN11COMPATIBLE = $true
-    Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
+$win11checkValue = $win11check.WIN11COMPATIBLE
+Write-Host -ForegroundColor Green "[x] win11 = '$win11checkValue'"
+if ($win11checkValue -eq $true) {
+    Write-Host -ForegroundColor Green "[x] Computer is Windows 11 Compatible. Continuing with installation."
     Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
     }
 else {
-    $WIN11COMPATIBLE = $false
-    Write-Host -ForegroundColor Red "[+] Computer is only Windows 10 Compatible. Continuing with installation."
+    Write-Host -ForegroundColor Red "[x] Computer is only Windows 10 Compatible. Continuing with installation."
     Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSName 'Windows 10 22H2 x64' -OSEdition Education -ZTI
     }
-
-
-
 
 
 
