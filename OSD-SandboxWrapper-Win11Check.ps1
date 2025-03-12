@@ -35,50 +35,8 @@ param()
 $ScriptName = 'sandbox.osdcloud.com'
 $ScriptVersion = '23.6.10.1'
 
-#region Initialize
-$Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
-$null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -ErrorAction Ignore
 
-if ($env:SystemDrive -eq 'X:') {
-    $WindowsPhase = 'WinPE'
-}
-else {
-    $ImageState = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State' -ErrorAction Ignore).ImageState
-    if ($env:UserName -eq 'defaultuser0') {$WindowsPhase = 'OOBE'}
-    elseif ($ImageState -eq 'IMAGE_STATE_SPECIALIZE_RESEAL_TO_OOBE') {$WindowsPhase = 'Specialize'}
-    elseif ($ImageState -eq 'IMAGE_STATE_SPECIALIZE_RESEAL_TO_AUDIT') {$WindowsPhase = 'AuditMode'}
-    else {$WindowsPhase = 'Windows'}
-}
-
-Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
-
-
-#endregion
-
-#region Admin Elevation
-$whoiam = [system.security.principal.windowsidentity]::getcurrent().name
-$isElevated = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
-if ($isElevated) {
-    Write-Host -ForegroundColor Green "[+] Running as $whoiam (Admin Elevated)"
-}
-else {
-    Write-Host -ForegroundColor Red "[!] Running as $whoiam (NOT Admin Elevated)"
-    Break
-}
-#endregion
-
-#region Transport Layer Security (TLS) 1.2
-Write-Host -ForegroundColor Green "[+] Transport Layer Security (TLS) 1.2"
-[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-#endregion
-
-#region WinPE
-if ($WindowsPhase -eq 'WinPE') {
-    #Process OSDCloud startup and load Azure KeyVault dependencies
-    Import-Module OSD -Force
-
-
-
+function Win11Check {
 
 
 $exitCode = 0
@@ -551,12 +509,12 @@ $outObject | ConvertTo-Json -Compress
 if ($outObject.returnResult -eq $CAPABLE_CAPS_STRING) {
     $WIN11COMPATIBLE = $true
     Write-Host -ForegroundColor Green "[+] Computer is Windows 11 Compatible. Continuing with installation."
-    Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
+    
     }
 else {
     $WIN11COMPATIBLE = $false
     Write-Host -ForegroundColor Red "[+] Computer is only Windows 10 Compatible. Continuing with installation."
-    Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSName 'Windows 10 22H2 x64' -OSEdition Education -ZTI
+    
     }
 
 [pscustomobject]@{
@@ -564,10 +522,60 @@ else {
     IncompatibleItems = $outObject.returnReason
 }
 
+}
+
+
+#region Initialize
+$Transcript = "$((Get-Date).ToString('yyyy-MM-dd-HHmmss'))-$ScriptName.log"
+$null = Start-Transcript -Path (Join-Path "$env:SystemRoot\Temp" $Transcript) -ErrorAction Ignore
+
+if ($env:SystemDrive -eq 'X:') {
+    $WindowsPhase = 'WinPE'
+}
+else {
+    $ImageState = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State' -ErrorAction Ignore).ImageState
+    if ($env:UserName -eq 'defaultuser0') {$WindowsPhase = 'OOBE'}
+    elseif ($ImageState -eq 'IMAGE_STATE_SPECIALIZE_RESEAL_TO_OOBE') {$WindowsPhase = 'Specialize'}
+    elseif ($ImageState -eq 'IMAGE_STATE_SPECIALIZE_RESEAL_TO_AUDIT') {$WindowsPhase = 'AuditMode'}
+    else {$WindowsPhase = 'Windows'}
+}
+
+$win11check = Win11Check
+
+Write-Host -ForegroundColor Green "[+] $ScriptName $ScriptVersion ($WindowsPhase Phase)"
+
+
+#endregion
+
+#region Admin Elevation
+$whoiam = [system.security.principal.windowsidentity]::getcurrent().name
+$isElevated = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+if ($isElevated) {
+    Write-Host -ForegroundColor Green "[+] Running as $whoiam (Admin Elevated)"
+}
+else {
+    Write-Host -ForegroundColor Red "[!] Running as $whoiam (NOT Admin Elevated)"
+    Break
+}
+#endregion
+
+#region Transport Layer Security (TLS) 1.2
+Write-Host -ForegroundColor Green "[+] Transport Layer Security (TLS) 1.2"
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+#endregion
+
+#region WinPE
+if ($WindowsPhase -eq 'WinPE') {
+    #Process OSDCloud startup and load Azure KeyVault dependencies
+    Import-Module OSD -Force
 
 
 
 
+
+
+Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
+#Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSName 'Windows 10 22H2 x64' -OSEdition Education -ZTI
 
     
 
