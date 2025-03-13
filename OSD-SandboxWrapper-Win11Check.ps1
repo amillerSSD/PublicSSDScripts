@@ -605,7 +605,6 @@ $win11checkValue = $win11check.WIN11COMPATIBLE
 Write-Host -ForegroundColor Green "[x] win11 = '$win11checkValue'"
 
 
-$responsez = read-host "Press enter to continue"
 
 if ($win11checkValue -eq $true) {
     Write-Host -ForegroundColor Green "[x] Computer is Windows 11 Compatible. Continuing with installation."
