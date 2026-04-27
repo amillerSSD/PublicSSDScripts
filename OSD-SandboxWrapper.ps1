@@ -77,7 +77,7 @@ if ($WindowsPhase -eq 'WinPE') {
     #Process OSDCloud startup and load Azure KeyVault dependencies
     Import-Module OSD -Force
 
-Start-OSDCloud -OSLanguage en-us -OSBuild 24H2 -OSEdition Education -ZTI
+Start-OSDCloud -OSLanguage en-us -OSBuild 25H2 -OSEdition Education -ZTI
 
     
     #Stop the startup Transcript.  OSDCloud will create its own
