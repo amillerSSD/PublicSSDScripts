@@ -608,11 +608,11 @@ Write-Host -ForegroundColor Green "[x] win11 = '$win11checkValue'"
 
 if ($win11checkValue -eq $true) {
     Write-Host -ForegroundColor Green "[x] Computer is Windows 11 Compatible. Continuing with installation."
-    Start-OSDCloud -OSLanguage en-us -OSBuild 25H2 -OSEdition Education -ZTI
+    Start-OSDCloud -OSLanguage en-us -OSBuild 25H2 -OSEdition Enterprise -ZTI
     }
 else {
     Write-Host -ForegroundColor Red "[x] Computer is only Windows 10 Compatible. Continuing with installation."
-    Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSVersion 'Windows 10' -OSEdition Education -ZTI
+    Start-OSDCloud -OSLanguage en-us -OSBuild 22H2 -OSVersion 'Windows 10' -OSEdition Enterprise -ZTI
     }
 
 
