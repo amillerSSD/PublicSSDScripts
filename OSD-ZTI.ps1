@@ -9,7 +9,7 @@ Import-Module OSD -Force
 
 #Start OSDCloud ZTI the RIGHT way
 Write-Host  -ForegroundColor Cyan "Start OSDCloud with MY Parameters"
-Start-OSDCloud -OSLanguage en-us -OSBuild 25H2 -OSEdition Education -ZTI
+Start-OSDCloud -OSLanguage en-us -OSBuild 25H2 -OSEdition Enterprise -ZTI
 
 #Restart from WinPE
 Write-Host  -ForegroundColor Cyan "Restarting in 20 seconds!"
